@@ -1,0 +1,314 @@
+@font-face {
+    font-family: BagossStandardTRIAL-Regular;
+    src: url(/assets/fonts/BagossStandardTRIAL-Regular.woff);
+    font-weight: normal;
+}
+h1, h2, h3, h4, h5, h6, p, a, button, span, input, label, li, div {
+    font-family: 'BagossStandardTRIAL-Regular' !important;
+}
+:root{
+    --body-bg-color:#E9EEF4;
+    --header-bg-color: #162941;
+    --menu-color-hover: #b79950;
+    --footer-bg-color: #162941;
+    --background-light: #D5DDE8;
+    --button-bg-color: #b79950;
+    --button-bg-hover: #b79a50e8;
+    --card-border-color: #d4e3f0;
+    --inputfields-border-color: #d4e3f0;
+    --badge-bg-color: #ECD6A2;
+}
+body{
+    background-color: var(--body-bg-color) !important;
+}
+/* input[type='text']:focus,input[type='number']:focus, .text-area-field:focus {
+    background-color: white !important;
+    border: 1px solid #d1d5db !important;
+} */
+
+@media screen and (min-width:992px){
+    .container{
+        max-width: 1440px;
+    }
+    .login-reg .container{
+        max-width:1140px;
+    }
+    .width-20{
+        width:20%;
+    }
+    .width-80{
+        width:80%;
+    }
+    .h-screen{
+        height: 100vh;
+    }
+    .login-reg-rightside{
+        margin-left:50px;
+        border-radius: 0px 20px 20px 0px;
+    }
+    .createeditform{
+        max-width: 60%;
+    }
+    .profilepage-container .container{
+        max-width: 1140px;
+    }
+    .rolespermission-container .container{
+        max-width: 750px;
+    }
+    .dashboard-container .container{
+        max-width:1440px;
+    }
+    /* .pricing-container .container{
+        max-width: 920px;
+    } */
+
+}
+header{
+    background-color: var(--header-bg-color);
+}
+footer{
+    background-color: var(--footer-bg-color);
+}
+header a:hover, header button:hover{
+    color: var(--menu-color-hover);
+}
+footer a:hover, footer button:hover{
+    color: var(--menu-color-hover);
+}
+.mainbanner {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.category-side.border, .blog-card{
+    border-color: var(--card-border-color);
+    border-width: 2px;
+}
+.category-side{
+    background-color: white;
+}
+.category-side .border-b{
+    border-color: var(--card-border-color);
+    border-width: 0px 0px 2px 0px;
+}
+.card-badge{
+    background-color: var(--badge-bg-color);
+}
+.button-bg-gold{
+    background-color: var(--button-bg-color);
+
+}
+.button-bg-gold:hover{
+    background-color: var(--button-bg-hover);
+    color: #fff ;
+}
+.category-side a:hover{
+    background-color: var(--button-bg-color);
+    color: #fff !important;
+}
+.category-side a:hover span{
+    color: #fff !important;
+}
+.category-side .active{
+    background-color: var(--button-bg-color);
+    color: #fff !important;
+}
+.category-side .active span{
+    color: #fff !important;
+}
+form .border {
+    border-color: var(--inputfields-border-color) !important;
+    border-width: 2px !important;
+}
+/* input:focus, textarea:focus, select:focus{
+    box-shadow: none !important;
+    border-color: transparent !important;
+} */
+/* form input{
+    background-color: transparent !important;
+} */
+input::placeholder{
+    color: #061a2c !important;
+}
+.mainbanner h2{
+    color: #b79950;
+}
+a:hover{
+    color: #b79950;
+}
+.articlesidebartitle a:hover span{
+    color: #b79950 !important;
+}
+.card-badge:hover{
+    background-color: #bdc6d2;
+    color: #000000 !important;
+}
+.blog-card h3:hover{
+    color: #b79950 !important;
+}
+h1, h2, h3, h4, h5, h6, p, span, label, input {
+    color: #061a2c;
+}
+/* .hs-dropdown-menu p, .hs-dropdown-menu span, .hs-dropdown-menu a{
+    color: #fff !important;
+} */
+.h-screen{
+    height: 100vh;
+}
+
+.login-reg-pg form input{
+    background-color: #D9D9D9 !important;
+}
+input[type="checkbox"]{
+    width: 24px;
+    height: 24px;
+    border-color: #d1d5db !important;
+}
+input[type='checkbox']:checked {
+    background-color: #b79950 !important;
+}
+input::placeholder, textarea::placeholder{
+    color: #071C2F;
+}
+header .menubg{
+    background-color: #D5DDE8;
+}
+header .menubg a{
+    color:#071C2F;
+}
+header .menubg a:hover{
+    color:#b79950;
+}
+select option:hover {
+    background-color: #b79950 !important; /* Background color on hover */
+    color: #000000; /* Text color on hover */
+  }
+
+select option:checked {
+    background-color: #b79950; /* Background color for selected option */
+    color: #ffffff; /* Text color for selected option */
+  }
+@media screen and (min-width:767px){
+    .login-reg-rightside{
+        width: 100%;
+        background-image: url(/assets/images/bg-layersforform.png);
+        background-position: bottom;
+        background-size: contain;
+        background-color: #071C2F;
+        margin-left:0px;
+        border-radius: 0px 20px 20px 0px;
+    }
+}
+@media screen and (max-width:767px) {
+    .login-reg-leftside {
+        width: 0px;
+        height: 0px;
+    }
+    .login-reg-inner{
+        gap: 0px;
+        align-items: center;
+        margin: auto;
+        background-image: none !important;
+    }
+    .login-reg-rightside {
+        background-color: #00000096;
+        border-radius: 20px;
+    }
+    .h-screen {
+        height: 100% !important;
+    }
+}
+form.otherforms input {
+    background-color: #fff !important;
+}
+  .custom-file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #e2e8f0; /* Light border */
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem; /* Rounded corners */
+    background-color: #f9fafb; /* Light gray background */
+  }
+  #file-name {
+    flex: 1;
+    font-size: 0.875rem; /* Small text */
+    color: #6b7280; /* Gray color */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .custom-file-button {
+    background-color: #e2e8f0; /* Light blue-gray */
+    color: #1a202c; /* Dark text color */
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem; /* Small text */
+    transition: background-color 0.2s ease-in-out;
+  }
+  .custom-file-button:hover {
+    background-color: #cbd5e0; /* Darker blue-gray on hover */
+  }
+  .profileimgwidth{
+    max-width: 285px;
+    max-height: 285px;
+  }
+  .edit-tool {
+    float: right;
+    position: relative;
+    top: -80px;
+}
+.roles-check-sec .checkbuttons a{
+    cursor: pointer;
+}
+.roles-check-sec .checkbuttons a:hover{
+    background-color: #727272 !important;
+    color: #fff !important;
+}
+
+.roundpricesec {
+    width: 185px;
+    height: 185px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 10px solid #8b94a0;
+}
+.listpricing li:before{
+ content:url('/assets/images/tickmark.png');
+ margin-right:10px;
+}
+.pricecounter {
+  width: 20%;
+  border-left: 1px solid #ddc058;
+}
+.pricecounter input {
+    border: 0px;
+    background: transparent;
+    font-size: 20px;
+    color: #ddc058 !important;
+}
+.listpricing-bg-light li{
+    color: #071C2F;
+}
+.listpricing-bg-light li:before{
+    content:url('/assets/images/tickmarkdark.png');
+    margin-right:10px;
+}
+.editor > div{
+    background-color: #fff !important;
+}
+.featured-blogs-listing{
+    border: 1px solid #bbbcbe !important;
+    border-radius: 0.5rem;
+}
+
+.prose a {
+    color: #2563eb !important; /* Tailwind's blue-600 */
+    text-decoration: underline !important;
+}
+.prose * {
+    background-color: transparent !important;
+}

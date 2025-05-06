@@ -15,6 +15,9 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
+                        {{ __('Home') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -103,6 +106,16 @@
                                 @can('role management')    
                                     <x-dropdown-link href="{{ route('role-and-permissions.show') }}">
                                         {{ __('Roles and Permissions') }}
+                                    </x-dropdown-link>
+                                @endcan 
+                                @can('post management')    
+                                    <x-dropdown-link href="{{ route('posts-management.all') }}">
+                                        {{ __('posts') }}
+                                    </x-dropdown-link>
+                                @endcan   
+                                @can('post management')    
+                                    <x-dropdown-link href="{{ route('post.create') }}">
+                                        {{ __('Create Post') }}
                                     </x-dropdown-link>
                                 @endcan                
                             @endcan
