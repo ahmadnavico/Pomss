@@ -18,6 +18,8 @@
     },
     "dependencies": {
         "@preline/select": "^2.6.0",
-        "preline": "^2.7.0"
+        "flatpickr": "^4.6.13",
+        "preline": "^2.7.0",
+        "toastify-js": "^1.12.0"
     }
 }

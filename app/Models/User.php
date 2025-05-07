@@ -35,11 +35,14 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'full_name',
         'email',
         'password',
     ];
 
+    
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -61,6 +64,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'profile_photo_url',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            // Automatically set full_name if not provided
+            $user->full_name = $user->first_name . ' ' . $user->last_name;
+        });
+    }
     /**
      * Get the attributes that should be cast.
      *

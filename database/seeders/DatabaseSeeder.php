@@ -28,12 +28,13 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'role create']);
         Permission::create(['name' => 'role management']);
         Permission::create(['name' => 'permission management']);
-        Permission::create(['name' => 'user management']);
+        Permission::create(['name' => 'members management']);
         Permission::create(['name' => 'view member']);
         Permission::create(['name' => 'post management']);
-        Permission::create(['name' => 'member edit']);
+        Permission::create(['name' => 'edit member']);
         Permission::create(['name' => 'member show all']);
         Permission::create(['name' => 'member edit profile info']);
+        Permission::create(['name' => 'member view profile info']);
         Permission::create(['name' => 'administration management']);
         Permission::create(['name' => 'category management']);
         Permission::create(['name' => 'edit category']);
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'edit setting']);
         Permission::create(['name' => 'delete setting']);
         
+        
         //Assign Permissions to Roles
         $role = Role::findByName('Admin');
         //Give All Permissions to Admin
@@ -49,7 +51,9 @@ class DatabaseSeeder extends Seeder
 
         //Create Admin User
         User::factory()->create([
-            'name' => 'Pomms Admin',
+            'first_name' => 'Ahmad',
+            'last_name' => 'Admin',
+            'full_name' => 'Ahmad Admin',
             'email' => 'ahmad@admin.com',
             'password' => Hash::make('11111111'),
         ]);

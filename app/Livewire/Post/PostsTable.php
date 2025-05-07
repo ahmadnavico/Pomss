@@ -52,8 +52,7 @@ final class PostsTable extends PowerGridComponent
                 return $badge;
             })
             ->add('username', function ($post) {
-                // $link = route('users-management.edit', $post->user->id);
-                return '<a href="#" class="text-blue-500 hover:underline">' . $post->user->name . '</a>';
+                return $post->user->name;
             })
             ->add('created_at')
             ->add('updated_at_formatted', function ($user) {
