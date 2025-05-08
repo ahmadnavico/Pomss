@@ -21,8 +21,11 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->date('dob')->nullable();
             $table->string('phone_number')->nullable();
-
-            $table->json('qualifications')->nullable(); // array of strings
+            
+            $table->string('cnic_copy')->nullable();
+            $table->string('pmdc_licence_copy')->nullable();
+            $table->string('fcps_degree_copy')->nullable();
+            
             $table->json('certifications')->nullable(); // [{ name: "", image: "" }, ...]
 
             $table->json('experience')->nullable(); // [{ hospital: "", years: "" }]
@@ -31,16 +34,9 @@ return new class extends Migration
             $table->text('bio')->nullable();
             $table->string('location')->nullable();
 
-            $table->integer('cases_operated')->nullable();
-
             $table->json('social_links')->nullable(); // { facebook: "", instagram: "", ... }
 
             $table->json('availability')->nullable(); // { monday: { open: "", close: "" }, ... }
-
-            $table->json('consultation_fee')->nullable(); // { currency: "USD", range: "50-100" }
-            $table->json('surgery_fee')->nullable();      // { currency: "USD", range: "1000-5000" }
-
-            $table->integer('success_rate')->nullable(); // 0 - 100
 
             $table->timestamps();
         });

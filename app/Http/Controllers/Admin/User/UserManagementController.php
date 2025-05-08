@@ -12,13 +12,12 @@ class UserManagementController extends Controller
     {
         return view('admin.user.showAll');
     }
-
     public function edit(User $user)
     {
         return view('admin.user.edit', compact('user'));
     }
     public function show(User $user)
-    {
+    {;
         return view('admin.user.view', compact('user'));
     }
 }

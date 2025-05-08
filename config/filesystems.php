@@ -43,6 +43,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'member' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/member'),  // Path where files will be stored
+            'url' => env('APP_URL').'/storage/member',    // URL to access the stored files
+            'visibility' => 'public',                     // Make it publicly accessible
+        ],
+
     ],
 
     /*

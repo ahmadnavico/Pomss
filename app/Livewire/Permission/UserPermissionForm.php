@@ -32,7 +32,6 @@ class UserPermissionForm extends Component
 
     public function updatePermissions()
     {
-        dd("dsadnkjad ");
         $this->validate([
             'name' => 'required|string|max:255',
             'selected_role' => 'required|exists:roles,id',

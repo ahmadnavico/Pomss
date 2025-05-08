@@ -11,44 +11,39 @@ class Member extends Model
         'title',
         'dob',
         'phone_number',
-        'qualifications',
+        'cnic_copy',
+        'pmdc_licence_copy',
+        'fcps_degree_copy',
         'certifications',
         'experience',
         'specialities',
         'bio',
         'location',
-        'cases_operated',
         'social_links',
         'availability',
-        'consultation_fee',
-        'surgery_fee',
-        'success_rate',
     ];
 
     protected $casts = [
-        'qualifications' => 'array',
+        'dob' => 'date',
         'certifications' => 'array',
         'experience' => 'array',
         'specialities' => 'array',
         'social_links' => 'array',
         'availability' => 'array',
-        'consultation_fee' => 'array',
-        'surgery_fee' => 'array',
-        'dob' => 'date',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function testimonials()
     {
         return $this->hasMany(Testimonial::class);
     }
-
-    public function portfolios()
+    public function qualifications()
     {
-        return $this->hasMany(Portfolio::class);
+        return $this->belongsToMany(Qualification::class, 'member_qualification', 'member_id', 'qualification_id');
     }
 
 }

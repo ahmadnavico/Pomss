@@ -14,7 +14,7 @@
             @endif
             
             @if (!auth()->user()->hasRole('Admin')) {{-- or just always show --}}
-                @livewire('profile.member-details-form')
+                @livewire('profile.member-details-form', ['member_Id' => auth()->user()->member->id])
                 <x-section-border />
             @endif
 

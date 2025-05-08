@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('testimonials', function (Blueprint $table) {
+        Schema::create('member_qualification', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('member_id')->constrained()->onDelete('cascade');
-
-            $table->string('patient_name');
-            $table->string('patient_image')->nullable();
-            $table->text('feedback');
-
+            $table->foreignId('qualification_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('testimonials');
+        Schema::dropIfExists('member_qualification');
     }
 };

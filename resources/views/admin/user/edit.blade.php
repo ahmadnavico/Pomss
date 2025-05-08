@@ -8,9 +8,12 @@
         </h2>
     </x-slot>
 
-    <div>
+    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         @can('member edit profile info')
             <livewire:user.user-profile-information :user="$user" />
+            
+            @livewire('profile.member-details-form', ['member_Id' => $user->member->id])
+            <x-section-border />
         @endcan
 
     </div>

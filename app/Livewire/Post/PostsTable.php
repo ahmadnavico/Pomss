@@ -52,7 +52,7 @@ final class PostsTable extends PowerGridComponent
                 return $badge;
             })
             ->add('username', function ($post) {
-                return $post->user->name;
+                return $post->user->full_name;
             })
             ->add('created_at')
             ->add('updated_at_formatted', function ($user) {
@@ -97,7 +97,7 @@ final class PostsTable extends PowerGridComponent
                         return;
                     }
                     $query->whereHas('user', function ($q) use ($searchTerm) {
-                        $q->where('users.name', 'like', "%{$searchTerm}%");
+                        $q->where('users.full_name', 'like', "%{$searchTerm}%");
                     });
                 }),
             Filter::datetimepicker('updated_at_formatted', 'updated_at'),
