@@ -177,7 +177,7 @@
 
 
             <!-- Experience -->
-            <<div class="col-span-6">
+            <div class="col-span-6">
                 <x-label value="Experience (Hospital & Duration)" />
 
                 @foreach($experience as $index => $exp)

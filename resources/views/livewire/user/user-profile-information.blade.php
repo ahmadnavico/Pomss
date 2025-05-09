@@ -74,3 +74,8 @@
     </div>
 
 </div>
+@if($user->member)
+<div class="max-w-7xl mx-auto py-10 ">
+    @livewire('profile.member-details-form', ['member_Id' => $user->member->id])
+</div>
+@endif

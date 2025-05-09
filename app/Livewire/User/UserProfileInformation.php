@@ -51,8 +51,9 @@ class UserProfileInformation extends Component
         $role = Role::find($this->selected_role);
         $this->user->syncRoles([$role]);
         session()->flash('success', 'Profile updated successfully.');
+        $this->dispatch('notify', title: 'Member Profile', message: 'Profile updated successfully.', type: 'success'); 
         $this->dispatch('saved');
-        return redirect(route('members-management.all'));
+        // return redirect(route('members-management.all'));
     }
 
 
