@@ -23,15 +23,30 @@ class MembersSearch extends Component
                 $query->where('location', 'like', '%' . $this->location . '%');
             })
             ->get()
+            ->map(function ($member) {
+                $expRaw = $member->experience;
+
+                if (is_string($expRaw)) {
+                    $expRaw = json_decode($expRaw, true);
+                }
+
+                $totalYears = 0;
+                if (is_array($expRaw)) {
+                    $totalYears = collect($expRaw)->sum(function ($exp) {
+                        $from = isset($exp['from']) ? (int) $exp['from'] : null;
+                        $to = isset($exp['to']) ? (int) $exp['to'] : null;
+
+                        return ($from && $to && $to >= $from) ? ($to - $from) : 0;
+                    });
+                }
+
+                $member->    = $totalYears;
+
+                return $member;
+            })
             ->filter(function ($member) {
                 if (!$this->min_experience) return true;
-
-                $experience = collect($member->experience ?? []);
-                $totalYears = $experience->sum(function ($item) {
-                    return (int) ($item['years'] ?? 0);
-                });
-
-                return $totalYears >= $this->min_experience;
+                return $member->calculated_experience >= $this->min_experience;
             });
 
         return view('livewire.members.members-search', [
