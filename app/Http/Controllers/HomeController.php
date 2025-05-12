@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     public function __invoke(Request $request){
-        $posts = Post::where('status', PostStatusEnum::PUBLISHED->value)->get(); 
-        return view('welcome', compact('posts'));
+        return view('welcome');
     }
 }

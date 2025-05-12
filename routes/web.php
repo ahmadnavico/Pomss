@@ -22,7 +22,7 @@ Route::middleware([
         Route::prefix('role-and-permissions')->middleware('can:role management')->group(function () {
             Route::get('/', [RoleAndPermissionController::class, 'show'])->name('role-and-permissions.show');
         });
-        Route::prefix('post')->middleware('can:post management')->group(function () {
+        Route::prefix('post')->group(function () {
             Route::get('create/{post?}', CreatePostController::class)->name('post.create');
         });
         Route::prefix('posts-management')->middleware('can:post management')->group(function () {
