@@ -40,7 +40,7 @@ class MembersSearch extends Component
                     });
                 }
 
-                $member->    = $totalYears;
+                $member->calculated_experience = $totalYears;
 
                 return $member;
             })
