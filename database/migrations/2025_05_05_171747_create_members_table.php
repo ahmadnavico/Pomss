@@ -30,6 +30,7 @@ return new class extends Migration
 
             $table->json('experience')->nullable(); // [{ hospital: "", years: "" }]
             $table->json('specialities')->nullable(); // array of strings
+            $table->json('qualifications')->nullable(); // array of strings
 
             $table->text('bio')->nullable();
             $table->string('location')->nullable();

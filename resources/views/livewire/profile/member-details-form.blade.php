@@ -88,43 +88,37 @@
             </div>
 
 
+          
             <div class="col-span-6">
-                <x-label class="text-left" for="selectedQualifications">
-                    Qualifications*
-                </x-label>
+                <x-label value="Qualifications" />
 
-                <div wire:ignore>
-                    <!-- Multi Select -->
-                    <select multiple="" id="selectedQualifications"
-                            name="selectedQualifications"
-                            wire:model="selectedQualifications"
-                            class="hidden"
-                            data-hs-select='{
-                                "placeholder": "Select option...",
-                                "dropdownClasses": "mt-2 z-50 w-full max-h-72 p-1 space-y-0.5 bg-white border border-gray-200 rounded-lg overflow-hidden overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 dark:bg-neutral-900 dark:border-neutral-700",
-                                "optionClasses": "py-2 px-4 w-full text-sm text-gray-800 cursor-pointer hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100 hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:text-neutral-200 dark:focus:bg-neutral-800",
-                                "mode": "tags",
-                                "wrapperClasses": "relative ps-0.5 pe-9 min-h-[46px] flex items-center flex-wrap text-nowrap w-full border border-gray-200 rounded-lg text-start text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400",
-                                "tagsItemTemplate": "<div class=\"flex flex-nowrap items-center relative z-10 bg-white border border-gray-200 rounded-full p-1 m-1 dark:bg-neutral-900 dark:border-neutral-700 \"><div class=\"size-6 me-1\" data-icon></div><div class=\"whitespace-nowrap text-gray-800 dark:text-neutral-200 \" data-title></div><div class=\"inline-flex shrink-0 justify-center items-center size-5 ms-2 rounded-full text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm dark:bg-neutral-700/50 dark:hover:bg-neutral-700 dark:text-neutral-400 cursor-pointer\" data-remove><svg class=\"shrink-0 size-3\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></div></div>",
-                                "tagsInputId": "hs-tags-input",
-                                "tagsInputClasses": "py-3 px-2 rounded-lg order-1 text-sm outline-none dark:bg-neutral-900 dark:placeholder-neutral-500 dark:text-neutral-400",
-                                "optionTemplate": "<div class=\"flex items-center\"><div class=\"size-8 me-2\" data-icon></div><div><div class=\"text-sm font-semibold text-gray-800 dark:text-neutral-200 \" data-title></div><div class=\"text-xs text-gray-500 dark:text-neutral-500 \" data-description></div></div><div class=\"ms-auto\"><span class=\"hidden hs-selected:block\"><svg class=\"shrink-0 size-4 text-blue-600\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z\"/></svg></span></div></div>",
-                                "extraMarkup": "<div class=\"absolute top-1/2 end-3 -translate-y-1/2\"><svg class=\"shrink-0 size-3.5 text-gray-500 dark:text-neutral-500 \" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/></svg></div>"
-                            }'>
-                        @foreach ($allQualifications as $qualification)
-                            <option value="{{ $qualification->name }}"
-                                    @if(in_array($qualification->name, $selectedQualifications)) selected @endif>
-                                {{ $qualification->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <!-- End Select -->
-
-                    @error('selectedQualifications')
-                    <span class="error">{{ $message }}</span>
+                @foreach($qualifications as $index => $qualification)
+                    <div class="flex items-center space-x-4 mb-2">
+                        <input type="text"
+                            class="w-full"
+                            wire:model.defer="qualifications.{{ $index }}"
+                            placeholder="Enter Qualification" />
+                        <button type="button"
+                                wire:click="removeQualification"{{ $index }})"
+                                class="text-red-600">
+                            Remove
+                        </button>
+                    </div>
+                     {{-- Show the error below the input --}}
+                    @error('qualifications.*') 
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
-                </div>
+                @endforeach
+
+                <button type="button"
+                        wire:click="addQualification"
+                        class="mt-2 px-3 py-1 bg-gray-200 rounded">
+                    + Add qualifications
+                </button>
+
+                <x-input-error for="specialities" class="mt-2" />
             </div>
+
 
             
             <!-- Certifications -->
@@ -183,16 +177,31 @@
                 @foreach($experience as $index => $exp)
                     <div class="flex items-center space-x-4 mb-2">
                         <!-- Hospital Name -->
-                        <input type="text" class="w-1/3" placeholder="Hospital Name"
-                            wire:model.defer="experience.{{ $index }}.hospital" />
+                        <div class="w-1/3">
+                            <input type="text" class="w-full" placeholder="Hospital Name"
+                                wire:model.defer="experience.{{ $index }}.hospital" />
+                            @error('experience.' . $index . '.hospital') 
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <!-- From Year -->
-                        <input type="text" class="w-1/4" placeholder="From (e.g. 2018)"
-                            wire:model.defer="experience.{{ $index }}.from" />
+                        <div class="w-1/4">
+                            <input type="text" class="w-full" placeholder="From (e.g. 2018)"
+                                wire:model.defer="experience.{{ $index }}.from" />
+                            @error('experience.' . $index . '.from') 
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <!-- To Year -->
-                        <input type="text" class="w-1/4" placeholder="To (e.g. 2022 or Present)"
-                            wire:model.defer="experience.{{ $index }}.to" />
+                        <div class="w-1/4">
+                            <input type="text" class="w-full" placeholder="To (e.g. 2022 or Present)"
+                                wire:model.defer="experience.{{ $index }}.to" />
+                            @error('experience.' . $index . '.to') 
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <!-- Remove Button -->
                         <button type="button" wire:click="removeExperience({{ $index }})"
@@ -205,6 +214,7 @@
 
                 <x-input-error for="experience" class="mt-2" />
             </div>
+
 
 
             <div class="col-span-6">
@@ -222,6 +232,10 @@
                             Remove
                         </button>
                     </div>
+                     {{-- Show the error below the input --}}
+                    @error('specialities.*') 
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 @endforeach
 
                 <button type="button"
@@ -273,24 +287,60 @@
                 <button type="button" wire:click="addSocialLink" class="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
                     + Add Social Link
                 </button>
-
                 <x-input-error for="socialLinks" class="mt-2" />
             </div>
 
 
             <!-- Availability -->
             <div class="col-span-6">
-                <x-label value="Availability (Open/Close Times)" />
-                <div class="grid grid-cols-1 gap-4">
-                    @foreach(['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] as $day)
-                        <div class="grid grid-cols-3 items-center gap-2">
-                            <x-label class="capitalize">{{ $day }}</x-label>
-                            <x-input type="time" wire:model.defer="availability.{{ $day }}.open" />
-                            <x-input type="time" wire:model.defer="availability.{{ $day }}.close" />
+                <x-label value="Availability" class="mb-2" />
+
+                @foreach($availability as $index => $slot)
+                    <div class="grid grid-cols-4 gap-4 items-center mb-3 border rounded p-4 bg-gray-50">
+                        {{-- Day Selector --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Day</label>
+                            <select wire:model.defer="availability.{{ $index }}.day" class="mt-1 block w-full rounded border-gray-300 shadow-sm">
+                                <option value="">Select Day</option>
+                                @foreach(['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] as $day)
+                                    <option value="{{ $day }}">{{ ucfirst($day) }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    @endforeach
-                </div>
+
+                        {{-- Open Time --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Open Time</label>
+                            <input type="time" wire:model.defer="availability.{{ $index }}.open" class="mt-1 block w-full rounded border-gray-300 shadow-sm">
+                        </div>
+
+                        {{-- Close Time --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Close Time</label>
+                            <input type="time" wire:model.defer="availability.{{ $index }}.close" class="mt-1 block w-full rounded border-gray-300 shadow-sm">
+                        </div>
+
+                        {{-- Remove Button --}}
+                        <div class="flex items-end">
+                            <button type="button"
+                                    wire:click="removeAvailabilitySlot({{ $index }})"
+                                    class="text-red-600 text-sm underline">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
+
+                {{-- Add New Availability Button --}}
+                <button type="button"
+                        wire:click="addAvailabilitySlot"
+                        class="mt-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded shadow hover:bg-blue-700">
+                    + Add Availability
+                </button>
+                <x-input-error for="availability" class="mt-2" />
             </div>
+
+
             <!-- testimonials -->
 
             <div class="col-span-6">
@@ -330,69 +380,38 @@
                         class="mt-2 px-3 py-1 bg-gray-200 rounded">
                     + Add Testimonial
                 </button>
+                <x-input-error for="testimonials" class="mt-2" />
             </div>
             <!-- testimonials -->
 
         </x-slot>
+        @if(!auth()->user()->hasRole('Admin') && $profile_approved)
+        
+            <x-slot name="actions">
+                <x-action-message class="me-3" on="saved">
+                    {{ __('Saved.') }}
+                </x-action-message>
 
+                <x-button wire:loading.attr="disabled" wire:target="save">
+                    {{ __('Save') }}
+                </x-button>
+            </x-slot>
+        @else
+        
         <x-slot name="actions">
+            <P>your are not allowed to do any changes your profile approval is in under process.</P>
+
             <x-action-message class="me-3" on="saved">
                 {{ __('Saved.') }}
             </x-action-message>
 
             <x-button wire:loading.attr="disabled" wire:target="save">
-                {{ __('Save') }}
+                {{ __('Request for Changes') }}
             </x-button>
         </x-slot>
+    
+        @endif
     </x-form-section>
 
-
-    <script>
-    function syncHSSelectToLivewire() {
-        const selectEl = document.querySelector('#selectedQualifications');
-        if (!selectEl) return;
-
-        setTimeout(() => {
-            const hsSelectInstance = window.HSSelect.getInstance(selectEl);
-
-            if (!hsSelectInstance) {
-                console.error('HSSelect instance not found.');
-                return;
-            }
-
-            const extractValue = (item) =>
-                typeof item === 'string' ? item : item?.value ?? item?.id ?? item?.title ?? item?.label ?? '';
-
-            const syncValues = () => {
-                const values = hsSelectInstance.selectedItems.map(extractValue).filter(Boolean);
-                console.log("Syncing tags:", values);
-                @this.call('updateSelectedQualifications', values);
-            };
-
-            // Initial sync
-            syncValues();
-
-            // Prevent duplicate listeners
-            selectEl.removeEventListener('change', syncValues);
-            selectEl.addEventListener('change', syncValues);
-        }, 300);
-    }
-
-    document.addEventListener('livewire:initialized', () => {
-        console.log('Livewire initialized - Initializing HSSelect');
-        if (window.HSStaticMethods) {
-            window.HSStaticMethods.autoInit(['select']);
-        }
-        syncHSSelectToLivewire();
-    });
-
-    document.addEventListener('livewire:updated', () => {
-        if (window.HSStaticMethods) {
-            window.HSStaticMethods.autoInit(['select']);
-        }
-        syncHSSelectToLivewire();
-    });
-</script>
-
-
+    
 </div>

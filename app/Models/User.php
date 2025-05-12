@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'full_name',
         'email',
         'password',
+        'profile_approved',
     ];
 
     
@@ -53,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        'profile_approved' => 'boolean',
     ];
 
     /**

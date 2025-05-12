@@ -17,6 +17,7 @@ class Member extends Model
         'certifications',
         'experience',
         'specialities',
+        'qualifications',
         'bio',
         'location',
         'social_links',
@@ -28,6 +29,7 @@ class Member extends Model
         'certifications' => 'array',
         'experience' => 'array',
         'specialities' => 'array',
+        'qualifications' => 'array',
         'social_links' => 'array',
         'availability' => 'array',
     ];
@@ -41,9 +43,6 @@ class Member extends Model
     {
         return $this->hasMany(Testimonial::class);
     }
-    public function qualifications()
-    {
-        return $this->belongsToMany(Qualification::class, 'member_qualification', 'member_id', 'qualification_id');
-    }
+   
 
 }

@@ -20,8 +20,7 @@ class MemberDetailsForm extends Component
     public $cnic_copy;
     public $pmdc_licence_copy;
     public $fcps_degree_copy;
-    public $selectedQualifications = [];
-    public $allQualifications = [];    
+    public $qualifications = []; // Qualifications
     public $certifications = []; // Each item: ['name' => '', 'image' => null]
     public $newCertification = ['name' => '', 'image' => null];
     public $tempImage;
@@ -31,47 +30,62 @@ class MemberDetailsForm extends Component
     public $bio = '';
     public $location = '';
     public $socialLinks = [];
-    public $availability = [
-        'monday' => ['open' => '', 'close' => ''],
-        'tuesday' => ['open' => '', 'close' => ''],
-        'wednesday' => ['open' => '', 'close' => ''],
-        'thursday' => ['open' => '', 'close' => ''],
-        'friday' => ['open' => '', 'close' => ''],
-        'saturday' => ['open' => '', 'close' => ''],
-        'sunday' => ['open' => '', 'close' => ''],
-    ];
+    public $availability = []; // No default week
+
     
     public $existing_cnic_copy;
     public $existing_pmdc_licence_copy;
     public $existing_fcps_degree_copy;
-    
-    protected $listeners = ['updateSelectedQualifications'];
+    public $profile_approved = false;
 
     protected function rules()
-    {
-        return [
-            'title' => 'required|string|max:255',
-            'dob' => 'required|date',
-            'phone_number' => 'required|string|max:20',
-            'cnic_copy' => [$this->existing_cnic_copy ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            'pmdc_licence_copy' => [$this->existing_pmdc_licence_copy ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            'fcps_degree_copy' => [$this->existing_fcps_degree_copy ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            // 'qualifications' => 'required|string',
-            // 'certifications' => 'required|string',
-            // 'experience' => 'required|string',
-            // 'specialities' => 'required|string',
-            'bio' => 'required|string',
-            'location' => 'required|string|max:255',
-            // 'social_links' => 'required|string',
-            // 'availability' => 'required|string',
-        ];
-    }
+{
+    return [
+        // Basic Fields
+        'title' => 'required|string|max:255',
+        'dob' => 'required|date',
+        'phone_number' => 'required|string|max:20',
+        'bio' => 'required|string',
+        'location' => 'required|string|max:255',
+
+        // Social Links
+        'socialLinks' => 'required|array',
+        'socialLinks.*.platform' => 'required|string|max:255',
+        'socialLinks.*.url' => 'required|url|max:255',
+
+        // Conditionally required file uploads
+        'cnic_copy' => [$this->existing_cnic_copy ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+        'pmdc_licence_copy' => [$this->existing_pmdc_licence_copy ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+        'fcps_degree_copy' => [$this->existing_fcps_degree_copy ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+
+        // // Qualifications
+        // 'qualifications' => 'required|array|min:1',
+        // 'qualifications.*' => 'required|string|max:255',
+
+        // // Certifications
+        // 'certifications' => 'required|array',
+        // 'certifications.*.name' => 'required|string|max:255',
+        // 'certifications.*.image' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+
+        // // Experience
+        // 'experience' => 'required|array',
+        // 'experience.*.hospital' => 'required|string|max:255',
+        // 'experience.*.from' => 'required|string|size:4|regex:/^\d{4}$/',
+        // 'experience.*.to' => 'required|string|size:4|regex:/^\d{4}$/',
+
+        // // Specialities
+        // 'specialities' => 'required|array',
+        // 'specialities.*' => 'required|string|max:255',
+
+        // // Testimonials
+        // 'testimonials' => 'nullable|array',
+        // 'testimonials.*.patient_name' => 'required_with:testimonials|string|max:255',
+        // 'testimonials.*.feedback' => 'required_with:testimonials|string',
+        // 'testimonials.*.patient_image' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+    ];
+}
 
 
-    public function updateSelectedQualifications($values)
-    {
-        $this->selectedQualifications = $values;
-    }
     public function addSocialLink()
     {
         $this->socialLinks[] = ['platform' => '', 'url' => ''];
@@ -96,7 +110,7 @@ class MemberDetailsForm extends Component
     {
         if (str_starts_with($propertyName, 'certifications.') && str_ends_with($propertyName, '.image')) {
             $this->validateOnly($propertyName, [
-                $propertyName => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+                $propertyName => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             ]);
         }
     }
@@ -185,6 +199,12 @@ class MemberDetailsForm extends Component
 
     public function addExperience()
     {
+        $this->validate([
+            'experience.*.hospital' => 'required|string|max:255',
+            'experience.*.from' => 'required|string|size:4|regex:/^\d{4}$/', // Validate it is a 4-digit year
+            'experience.*.to' => 'required|string|size:4|regex:/^\d{4}$/'
+        ]);
+        
         $this->experience[] = ['hospital' => '', 'from' => '', 'to' => ''];
     }
 
@@ -195,6 +215,30 @@ class MemberDetailsForm extends Component
         $this->experience = array_values($this->experience); // Reindex
     }
 
+
+    public function addAvailabilitySlot()
+    {
+        $this->availability[] = ['day' => '', 'open' => '', 'close' => ''];
+    }
+
+    public function removeAvailabilitySlot($index)
+    {
+        unset($this->availability[$index]);
+        $this->availability = array_values($this->availability); // Reindex
+    }
+
+    public function addQualification()
+    {
+        $this->qualifications[] = ''; // Add an empty value for a new qualification
+    }
+
+    public function removeQualification($index)
+    {
+        unset($this->qualifications[$index]);
+        $this->qualifications = array_values($this->qualifications); // Re-index
+    }
+
+
     public function mount($member_Id = null)
     {
         $this->member_Id = $member_Id; 
@@ -203,18 +247,13 @@ class MemberDetailsForm extends Component
         } else {
             // Admin is editing someone else’s profile — assume member_id is passed to the component
             $member = Member::findOrFail($this->member_Id);
-            $user = $member->user;
-            // Regular user editing their own profile
         }
+        (bool)$this->profile_approved = $member->user->profile_approved ?? false;
         
-
         $this->title = $member->title ?? '';
         $this->dob = optional($member->dob)->format('Y-m-d') ?? '';
         $this->phone_number = $member->phone_number ?? '';
-
-        $this->selectedQualifications = $member->qualifications()->pluck('name')->toArray();
-        $this->allQualifications = Qualification::all();
-
+        $this->qualifications = $member->qualifications ?? [];
         $this->certifications = json_encode($member->certifications ?? []);
         $this->experience = json_decode($member->experience ?? '[]', true);
         $this->specialities = $member->specialities ?? [];
@@ -252,6 +291,11 @@ class MemberDetailsForm extends Component
 
     public function save()
     {
+        if (!auth()->user()->hasRole('Admin') && $this->profile_approved) {
+            $this->dispatch('notify', title: 'Approved', message: 'Your Profile is already approved. Contact to admin for changes', type: 'error'); 
+            return;
+        }
+
         $this->validate();
         if (!auth()->user()->hasRole('Admin')) {
             $user = auth()->user();
@@ -268,8 +312,6 @@ class MemberDetailsForm extends Component
         ->pluck('url', 'platform') // platform => url
         ->toJson();
 
-
-       
 
         $folder = "member/{$memberId}";
         Storage::disk('member')->makeDirectory($folder);
@@ -298,12 +340,14 @@ class MemberDetailsForm extends Component
             ];
         }
 
+        
         $data = [
             'title' => $this->title,
             'dob' => $this->dob,
             'phone_number' => $this->phone_number,
             'certifications' => json_encode($certificationsToStore),
             'experience' => json_encode($this->experience),
+            'qualifications' => $this->qualifications,
             'specialities' => $this->specialities,
             'bio' => $this->bio,
             'location' => $this->location,
@@ -320,16 +364,9 @@ class MemberDetailsForm extends Component
                 : $this->existing_fcps_degree_copy,
         ];
 
-        $user->member()->updateOrCreate(['user_id' => $user->id], $data);
-        $member->updateOrCreate(['user_id' => $user->id], $data);
 
-        // Convert qualification names to IDs, creating any that don't exist
-        $qualificationIds = collect($this->selectedQualifications)->map(function ($name) {
-            return Qualification::firstOrCreate(['name' => $name])->id;
-        });
+        $member = $user->member()->updateOrCreate(['user_id' => $user->id], $data);
 
-        // Sync qualifications
-        $member->qualifications()->sync($qualificationIds);
         //testimonials
         foreach ($this->testimonials as $testimonialData) {
             $imagePath = null;

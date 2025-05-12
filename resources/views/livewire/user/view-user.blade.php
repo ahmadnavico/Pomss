@@ -51,16 +51,17 @@
                             </div>
 
                             <!-- Qualifications -->
-                            <div class="flex flex-col">
-                                <label class="text-lg font-medium text-gray-600">Qualifications</label>
-                                <div class="bg-gray-100 p-4 rounded-md text-lg text-gray-700">
-                                    @if($user->member && $user->member->qualifications->isNotEmpty())
-                                        {{ $user->member->qualifications->pluck('name')->implode(', ') }}
-                                    @else
-                                        N/A
-                                    @endif
+                            @php
+                                $qualifications = $user->member->qualifications;
+                            @endphp
+                            @if($qualifications && is_array($qualifications))
+                                <div class="flex flex-col sm:col-span-2">
+                                    <label class="text-lg font-medium text-gray-600">Qualifications</label>
+                                    <div class="bg-gray-100 p-4 rounded-md text-lg text-gray-700">
+                                        {{ implode(', ', $qualifications) }}
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
 
                             <!-- Location -->
                             <div class="flex flex-col">
