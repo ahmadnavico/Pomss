@@ -8,6 +8,7 @@ use App\Models\Qualification;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Notifications\MemberChangeRequested;
+use App\Notifications\ProfileSubmittedForApproval;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -41,6 +42,7 @@ class MemberDetailsForm extends Component
     public $existing_fcps_degree_copy;
     public $profile_approved = false;
     public $request_approved = false;
+    public $profile_submitted = false;
     public $showRequestModal = false;
     public $changeReason = '';
     
@@ -291,6 +293,7 @@ class MemberDetailsForm extends Component
 
         (bool)$this->profile_approved = $member->user->profile_approved ?? false;
         $this->request_approved = optional($member->changeRequest)->request_approved ?? true;
+        $this->profile_submitted = optional($member)->profile_submitted ?? false;
                
         $this->title = $member->title ?? '';
         $this->dob = optional($member->dob)->format('Y-m-d') ?? '';
@@ -404,8 +407,8 @@ class MemberDetailsForm extends Component
             'fcps_degree_copy' => $this->fcps_degree_copy
                 ? $this->fcps_degree_copy->store($folder, 'member')
                 : $this->existing_fcps_degree_copy,
+            'profile_submitted' => true,
         ];
-
 
         $member = $user->member()->updateOrCreate(['user_id' => $user->id], $data);
 
@@ -431,8 +434,13 @@ class MemberDetailsForm extends Component
                 ]
             );
         }
-
         $this->dispatch('saved');
+        if(!auth()->user()->hasRole('Admin')){
+            $admins = User::role('Admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new ProfileSubmittedForApproval($member));
+            }
+        }
     }
 
 

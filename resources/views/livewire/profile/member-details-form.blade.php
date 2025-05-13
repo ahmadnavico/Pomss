@@ -385,8 +385,8 @@
             <!-- testimonials -->
 
         </x-slot>
-        @if(!auth()->user()->hasRole('Admin') && $profile_approved)
-        
+        @if(!auth()->user()->hasRole('Admin') && !$profile_approved)
+            
             <x-slot name="actions">
                 <x-action-message class="me-3" on="saved">
                     {{ __('Saved.') }}
@@ -396,26 +396,24 @@
                     {{ __('Save') }}
                 </x-button>
             </x-slot>
-        @else
+                @if(!$request_approved)
+                    <p>Your previous request for changes is still under review. You can't submit another request at this time.</p>
+                @else
+                    <p>You are not allowed to make changes. Your profile approval is in process.</p>
+
+                    <x-action-message class="me-3" on="saved">
+                        {{ __('Request Done.') }}
+                    </x-action-message>
+
+                    <x-button wire:click="openRequestModal">
+                        {{ __('Request for Changes') }}
+                    </x-button>
+                @endif
         
-        <x-slot name="actions">
-            @if(!$request_approved)
-                <p>Your previous request for changes is still under review. You can't submit another request at this time.</p>
-            @else
-                <p>You are not allowed to make changes. Your profile approval is in process.</p>
-
-                <x-action-message class="me-3" on="saved">
-                    {{ __('Request Done.') }}
-                </x-action-message>
-
-                <x-button wire:click="openRequestModal">
-                    {{ __('Request for Changes') }}
-                </x-button>
-            @endif
-        </x-slot>
-
-
+            
         @endif
+        
+
     </x-form-section>
     @if($showRequestModal)
         <div class="fixed z-50 inset-0 overflow-y-auto">

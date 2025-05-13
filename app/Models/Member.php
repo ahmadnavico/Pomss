@@ -22,6 +22,7 @@ class Member extends Model
         'location',
         'social_links',
         'availability',
+        'profile_submitted',
     ];
 
     protected $casts = [

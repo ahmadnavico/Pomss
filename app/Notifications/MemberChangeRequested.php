@@ -30,6 +30,7 @@ class MemberChangeRequested extends Notification
             'message' => 'A new member change request has been submitted.',
             'member_id' => $this->changeRequest->member_id,
             'change_request_id' => $this->changeRequest->id,
+            'url' => route('member-management.edit', ['user' => $this->changeRequest->member->user->id]),
             'submitted_at' => now(),
         ];
     }
