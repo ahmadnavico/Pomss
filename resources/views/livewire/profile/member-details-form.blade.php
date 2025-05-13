@@ -399,19 +399,53 @@
         @else
         
         <x-slot name="actions">
-            <P>your are not allowed to do any changes your profile approval is in under process.</P>
+            @if(!$request_approved)
+                <p>Your previous request for changes is still under review. You can't submit another request at this time.</p>
+            @else
+                <p>You are not allowed to make changes. Your profile approval is in process.</p>
 
-            <x-action-message class="me-3" on="saved">
-                {{ __('Saved.') }}
-            </x-action-message>
+                <x-action-message class="me-3" on="saved">
+                    {{ __('Request Done.') }}
+                </x-action-message>
 
-            <x-button wire:loading.attr="disabled" wire:target="save">
-                {{ __('Request for Changes') }}
-            </x-button>
+                <x-button wire:click="openRequestModal">
+                    {{ __('Request for Changes') }}
+                </x-button>
+            @endif
         </x-slot>
-    
+
+
         @endif
     </x-form-section>
+    @if($showRequestModal)
+        <div class="fixed z-50 inset-0 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+
+                <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Reason for Change Request</h2>
+
+                    <textarea wire:model.defer="changeReason"
+                            class="w-full p-2 border rounded"
+                            rows="4"
+                            placeholder="Describe your reason..."></textarea>
+
+                    <x-input-error for="changeReason" class="mt-2" />
+
+                    <div class="mt-4 flex justify-end">
+                        <x-button wire:click="submitChangeRequest" class="mr-2">
+                            Submit Request
+                        </x-button>
+                        <x-secondary-button wire:click="closeRequestModal">
+                            Cancel
+                        </x-secondary-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     
 </div>

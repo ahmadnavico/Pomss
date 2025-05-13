@@ -20,8 +20,42 @@
                     </x-nav-link>
                 </div>
             </div>
+            
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+            @if(auth()->user()->hasRole('Admin'))
+                <div class="relative">
+                    <!-- Bell Icon -->
+                    @php
+                        $unreadCount = auth()->user()->unreadNotifications->count();
+                    @endphp
+
+                    <button onclick="toggleNotifications()" class="relative focus:outline-none">
+                        🔔
+                        @if($unreadCount)
+                            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                {{ $unreadCount }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <!-- Notification Dropdown -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        <div class="p-4 font-bold border-b">Notifications</div>
+                        <ul class="max-h-64 overflow-y-auto">
+                            @forelse(auth()->user()->notifications as $notification)
+                                <li class="p-3 border-b hover:bg-gray-100">
+                                    {{ $notification->data['message'] ?? 'No message' }}
+                                    <br>
+                                    <small class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</small>
+                                </li>
+                            @empty
+                                <li class="p-3 text-gray-500 text-sm">No notifications.</li>
+                            @endforelse
+                        </ul>
+                    </div>
+                </div>
+            @endif
             
             <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
@@ -121,7 +155,7 @@
                                         {{ __('posts') }}
                                     </x-dropdown-link>
                                 @endcan   
-                                   
+                                
                             @endcan
                             <x-dropdown-link href="{{ route('post.create') }}">
                                 {{ __('Create Post') }}
@@ -176,6 +210,7 @@
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
+            
             <div class="flex items-center px-4">
                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                     <div class="shrink-0 me-3">
@@ -247,3 +282,4 @@
         </div>
     </div>
 </nav>
+

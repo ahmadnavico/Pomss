@@ -43,6 +43,10 @@ class Member extends Model
     {
         return $this->hasMany(Testimonial::class);
     }
-   
+    public function changeRequest()
+    {
+        return $this->hasOne(MemberChangeRequest::class);
+    }
+    
 
 }

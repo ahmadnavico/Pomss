@@ -68,7 +68,22 @@
                 console.log('Livewire loaded!');
             });
 
-        </script>
+       
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notificationDropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
+    // Close when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('notificationDropdown');
+        const button = event.target.closest('button');
+
+        if (!button || !button.closest('div.relative')) {
+            dropdown?.classList.add('hidden');
+        }
+    });
+</script>
 
         @livewireScripts
     </body>

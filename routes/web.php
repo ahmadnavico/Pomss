@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Post\CreatePostController;
 use App\Http\Controllers\Admin\Post\PostManagementController;
 use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\User\UserManagementController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,9 +15,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::prefix('admin')->group(function () {
         Route::prefix('role-and-permissions')->middleware('can:role management')->group(function () {

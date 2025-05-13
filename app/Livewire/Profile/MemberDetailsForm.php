@@ -3,8 +3,11 @@
 namespace App\Livewire\Profile;
 
 use App\Models\Member;
+use App\Models\MemberChangeRequest;
 use App\Models\Qualification;
 use App\Models\Testimonial;
+use App\Models\User;
+use App\Notifications\MemberChangeRequested;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -37,7 +40,10 @@ class MemberDetailsForm extends Component
     public $existing_pmdc_licence_copy;
     public $existing_fcps_degree_copy;
     public $profile_approved = false;
-
+    public $request_approved = false;
+    public $showRequestModal = false;
+    public $changeReason = '';
+    
     protected function rules()
 {
     return [
@@ -239,17 +245,53 @@ class MemberDetailsForm extends Component
     }
 
 
+    public function openRequestModal()
+    {
+        $this->resetErrorBag();
+        $this->showRequestModal = true;
+    }
+
+    public function closeRequestModal()
+    {
+        $this->showRequestModal = false;
+    }
+
+    public function submitChangeRequest()
+    {
+        $this->validate([
+            'changeReason' => 'required|string|min:5',
+        ]);
+       
+        
+        $changeRequest = MemberChangeRequest::create([
+            'member_id' => $this->member_Id,
+            'message' => $this->changeReason,
+        ]);
+        $admins = User::role('Admin')->get();
+         // using Spatie roles
+        foreach ($admins as $admin) {
+            $admin->notify(new MemberChangeRequested($changeRequest));
+        }
+        $this->reset(['showRequestModal', 'changeReason']);
+
+        $this->dispatch('notify', title: 'Request Send', message: 'Your Request for Changes Submitted.', type: 'success'); 
+            
+    }
+
+
     public function mount($member_Id = null)
     {
-        $this->member_Id = $member_Id; 
+        $this->member_Id = $member_Id;
         if (!auth()->user()->hasRole('Admin')) {
             $member = Auth::user()->member;
         } else {
             // Admin is editing someone else’s profile — assume member_id is passed to the component
             $member = Member::findOrFail($this->member_Id);
         }
+
         (bool)$this->profile_approved = $member->user->profile_approved ?? false;
-        
+        $this->request_approved = optional($member->changeRequest)->request_approved ?? true;
+               
         $this->title = $member->title ?? '';
         $this->dob = optional($member->dob)->format('Y-m-d') ?? '';
         $this->phone_number = $member->phone_number ?? '';
