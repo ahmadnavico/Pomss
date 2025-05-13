@@ -8,11 +8,15 @@ use App\Models\Qualification;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Notifications\MemberChangeRequested;
+use App\Notifications\MemberProfileApprovalNotification;
 use App\Notifications\ProfileSubmittedForApproval;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use App\Models\MemberProfileApproval;
+
 use Livewire\WithFileUploads;
+use App\Notifications\MemberChangeRequestResponse;
 
 class MemberDetailsForm extends Component
 {
@@ -40,11 +44,23 @@ class MemberDetailsForm extends Component
     public $existing_cnic_copy;
     public $existing_pmdc_licence_copy;
     public $existing_fcps_degree_copy;
-    public $profile_approved = false;
-    public $request_approved = false;
+    public $requestApproval = false;
+    public bool $haveRequests = false;
     public $profile_submitted = false;
     public $showRequestModal = false;
     public $changeReason = '';
+    public $approvalModalOpen = false;
+    public $isApproved;
+    public $approvalMessage;
+    public $profileApproved = false;
+
+    //maanage requests 
+    public $manageRequestModalOpen = false;
+    public $requestApproved = null;
+    public $requestRejectionReason = '';
+    public $showRejectionReasonField = false;
+    public $changeRequest; // Add this
+
     
     protected function rules()
 {
@@ -271,6 +287,7 @@ class MemberDetailsForm extends Component
         ]);
         $admins = User::role('Admin')->get();
          // using Spatie roles
+        $this->dispatch('changerequest');
         foreach ($admins as $admin) {
             $admin->notify(new MemberChangeRequested($changeRequest));
         }
@@ -279,6 +296,93 @@ class MemberDetailsForm extends Component
         $this->dispatch('notify', title: 'Request Send', message: 'Your Request for Changes Submitted.', type: 'success'); 
             
     }
+
+
+    public function openApprovalModal()
+    {
+        $this->approvalModalOpen = true;
+    }
+
+
+    public function submitApproval()
+    {
+        $this->validate([
+            'isApproved' => 'required|boolean',
+            'approvalMessage' => 'nullable|string|max:1000',
+        ]);
+
+        // Save decision
+        MemberProfileApproval::updateOrCreate(
+            ['member_id' => $this->member_Id],
+            [
+                'is_approved' => $this->isApproved,
+                'message' => $this->approvalMessage,
+            ]
+        );
+        $member = Member::findOrFail($this->member_Id);
+
+        // Notify the member
+        $member->user->notify(new MemberProfileApprovalNotification(
+            $member,
+            (bool)$this->isApproved,
+            $this->approvalMessage
+        ));
+
+        $this->dispatch('notify', title: 'Success', message: 'Decision saved and member notified.', type: 'success');
+        $this->dispatch('reviewed');
+        $this->approvalModalOpen = false;
+        $this->reset(['isApproved', 'approvalMessage']);
+    }
+
+    //request management
+    public function handleApprovalSelection($value)
+    {
+        // dd($value);
+        $this->requestApproved = $value;
+        $this->showRejectionReasonField = $value === '0';
+    }
+
+    public function openManageRequestModal()
+    {
+        $this->resetErrorBag();
+        $this->reset(['requestApproved', 'requestRejectionReason']);
+        $this->manageRequestModalOpen = true;
+    }
+
+    public function closeManageRequestModal()
+    {
+        $this->manageRequestModalOpen = false;
+    }
+    public function submitRequestDecision()
+    {
+        $this->validate([
+            'requestApproved' => 'required|in:1,0',
+            'requestRejectionReason' => 'required_if:requestApproved,0|string|max:1000',
+        ]);
+
+        $member = Member::findOrFail($this->member_Id);
+        // dd($member);
+        // Update request status (if you track it in DB — optional)
+        $changeRequest = $member->changeRequest;
+        if ($changeRequest) {
+            $changeRequest->update([
+                'request_approved' => $this->requestApproved,
+            ]);
+        }
+
+        // Notify the member
+        $member->user->notify(new MemberChangeRequestResponse(
+            $member,
+            (bool) $this->requestApproved,
+            $this->requestRejectionReason
+        ));
+
+        $this->dispatch('notify', title: 'Success', message: 'Request decision submitted.', type: 'success');
+        $this->dispatch('managerequest');
+
+        $this->reset(['manageRequestModalOpen', 'requestApproved', 'requestRejectionReason']);
+    }
+    //request management
 
 
     public function mount($member_Id = null)
@@ -291,10 +395,14 @@ class MemberDetailsForm extends Component
             $member = Member::findOrFail($this->member_Id);
         }
 
-        (bool)$this->profile_approved = $member->user->profile_approved ?? false;
-        $this->request_approved = optional($member->changeRequest)->request_approved ?? true;
+        // (bool)$this->profile_approved = $member->user->profile_approved ?? false;
+        $this->profileApproved = optional($member->profileApproval)->is_approved ?? false;
+        $this->requestApproval = optional($member->changeRequest)->request_approved ?? true;
+        $this->haveRequests = $member->changeRequest()->exists();
+        $this->changeRequest = $member->changeRequest->message ?? null;
+
         $this->profile_submitted = optional($member)->profile_submitted ?? false;
-               
+        
         $this->title = $member->title ?? '';
         $this->dob = optional($member->dob)->format('Y-m-d') ?? '';
         $this->phone_number = $member->phone_number ?? '';
@@ -336,11 +444,9 @@ class MemberDetailsForm extends Component
 
     public function save()
     {
-        if (!auth()->user()->hasRole('Admin') && $this->profile_approved) {
-            $this->dispatch('notify', title: 'Approved', message: 'Your Profile is already approved. Contact to admin for changes', type: 'error'); 
+        if (!auth()->user()->hasRole('Admin') && $this->profileApproved || $this->haveRequests) {
             return;
         }
-
         $this->validate();
         if (!auth()->user()->hasRole('Admin')) {
             $user = auth()->user();

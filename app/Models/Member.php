@@ -46,8 +46,12 @@ class Member extends Model
     }
     public function changeRequest()
     {
-        return $this->hasOne(MemberChangeRequest::class);
+        return $this->hasMany(MemberChangeRequest::class);
     }
-    
+    public function profileApproval()
+    {
+        return $this->hasOne(MemberProfileApproval::class);
+    }
+
 
 }

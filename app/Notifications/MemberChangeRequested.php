@@ -27,7 +27,7 @@ class MemberChangeRequested extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
-            'message' => 'A new member change request has been submitted.',
+            'message' => "{$this->changeRequest->member->user->full_name} change request has been submitted.",
             'member_id' => $this->changeRequest->member_id,
             'change_request_id' => $this->changeRequest->id,
             'url' => route('member-management.edit', ['user' => $this->changeRequest->member->user->id]),

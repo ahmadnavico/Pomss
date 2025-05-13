@@ -23,11 +23,24 @@
             
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-            @if(auth()->user()->hasRole('Admin'))
+            
+
                 <div class="relative">
-                    <!-- Bell Icon -->
                     @php
-                        $unreadCount = auth()->user()->unreadNotifications->count();
+                        $user = auth()->user();
+
+                        // Filter approval notifications (for members)
+                        $approvalNotifications = $user->unreadNotifications->filter(function ($notification) {
+                            return $notification->type === \App\Notifications\MemberProfileApprovalNotification::class;
+                        });
+
+                        // Admins see all notifications except MemberProfileApprovalNotification
+                        $adminNotifications = $user->unreadNotifications->filter(function ($notification) {
+                            return $notification->type !== \App\Notifications\MemberProfileApprovalNotification::class;
+                        });
+
+                        // Count appropriate notifications
+                        $unreadCount = $user->hasRole('Admin') ? $adminNotifications->count() : $approvalNotifications->count();
                     @endphp
 
                     <button onclick="toggleNotifications()" class="relative focus:outline-none">
@@ -43,20 +56,39 @@
                     <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                         <div class="p-4 font-bold border-b">Notifications</div>
                         <ul class="max-h-64 overflow-y-auto">
-                            @forelse(auth()->user()->notifications as $notification)
-                                <li class="p-3 border-b hover:bg-gray-100">
-                                    {{ $notification->data['message'] ?? 'No message' }}
-                                    <br>
-                                    <small class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</small>
-                                </li>
-                            @empty
-                                <li class="p-3 text-gray-500 text-sm">No notifications.</li>
-                            @endforelse
+
+                            {{-- Member: show only profile approval notifications --}}
+                            @if($user->hasRole('Member'))
+                                @forelse($approvalNotifications as $notification)
+                                    <a href="{{ $notification->data['url'] }}" class="block px-4 py-2 hover:bg-gray-100">
+                                        {{ $notification->data['message'] }}
+                                        @if (!empty($notification->data['reason']))
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                Reason: {{ $notification->data['reason'] }}
+                                            </div>
+                                        @endif
+                                    </a>
+                                @empty
+                                    <div class="p-2 text-sm text-gray-500">No unread approval notifications</div>
+                                @endforelse
+                            @endif
+
+                            {{-- Admin: show all *non-approval* notifications --}}
+                            @if($user->hasRole('Admin'))
+                                @forelse($adminNotifications as $notification)
+                                    <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-2 hover:bg-gray-100">
+                                        {{ $notification->data['message'] ?? 'New notification' }}
+                                    </a>
+                                @empty
+                                    <div class="p-2 text-sm text-gray-500">No unread notifications</div>
+                                @endforelse
+                            @endif
+
                         </ul>
                     </div>
                 </div>
-            @endif
-            
+
+
             <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     <div class="ms-3 relative">

@@ -385,9 +385,49 @@
             <!-- testimonials -->
 
         </x-slot>
-        @if(!auth()->user()->hasRole('Admin') && !$profile_approved)
-            
+        @if (!auth()->user()->hasRole('Admin'))
+
+            @if (!$profile_submitted)
+                <x-slot name="actions">
+                    <x-action-message class="me-3" on="saved">
+                        {{ __('Saved.') }}
+                    </x-action-message>
+
+                    <x-button wire:loading.attr="disabled" wire:target="save">
+                        {{ __('Save') }}
+                    </x-button>
+                </x-slot>
+
+            @elseif (!$requestApproval)
+                <x-slot name="actions">
+                    <p>Your previous request for changes is still under review. You can't submit another request at this time.</p>
+                </x-slot>
+            @else
+                <x-slot name="actions">
+                    @if($profileApproved)
+                        <p>Your Profile is Approved from Admin For any Changes You can Request to Admin.</p>
+                    @else
+                        <p>You are not allowed to make changes. Your profile approval is in process.</p>
+                    @endif
+                    <x-action-message class="me-3" on="changerequest">
+                        {{ __('Request Done.') }}
+                    </x-action-message>
+
+                    <x-button wire:click="openRequestModal">
+                        {{ __('Request for Changes') }}
+                    </x-button>
+                </x-slot>
+            @endif
+        @endif
+
+        @if(auth()->user()->hasRole('Admin'))
             <x-slot name="actions">
+                @if($profileApproved)
+                    <p>This Profile Review is Completed and it's Approved.</p>
+                @else
+                    <p>This Profile Review is Completed and it's Rejected.</p>
+                @endif
+
                 <x-action-message class="me-3" on="saved">
                     {{ __('Saved.') }}
                 </x-action-message>
@@ -395,26 +435,78 @@
                 <x-button wire:loading.attr="disabled" wire:target="save">
                     {{ __('Save') }}
                 </x-button>
-            </x-slot>
-                @if(!$request_approved)
-                    <p>Your previous request for changes is still under review. You can't submit another request at this time.</p>
-                @else
-                    <p>You are not allowed to make changes. Your profile approval is in process.</p>
 
-                    <x-action-message class="me-3" on="saved">
-                        {{ __('Request Done.') }}
+                <x-action-message class="me-3" on="reviewed">
+                    {{ __('Review Done.') }}
+                </x-action-message>
+
+                <x-button wire:click="openApprovalModal">
+                    {{ __('Review Approval') }}
+                </x-button>
+                @if($haveRequests)
+                    <x-action-message class="me-3" on="managerequest">
+                        {{ __('Request Managed.') }}
                     </x-action-message>
 
-                    <x-button wire:click="openRequestModal">
-                        {{ __('Request for Changes') }}
+                    <x-button wire:click="openManageRequestModal">
+                        {{ __('Manage Request') }}
                     </x-button>
                 @endif
-        
-            
+            </x-slot>
+
         @endif
+
+
+
         
 
-    </x-form-section>
+        </x-form-section>
+
+        @if($approvalModalOpen)
+            <div class="fixed z-50 inset-0 overflow-y-auto">
+                <div class="flex items-center justify-center min-h-screen px-4">
+                    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full p-6">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Profile Approval Decision</h2>
+
+                        <div class="mb-4">
+                            <label for="isApproved" class="block text-sm font-medium text-gray-700 mb-1">Decision:</label>
+                            <select wire:model="isApproved" id="isApproved" class="w-full border rounded p-2">
+                                <option value="">-- Select --</option>
+                                <option value="1">Approve</option>
+                                <option value="0">Reject</option>
+                            </select>
+                            <x-input-error for="isApproved" class="mt-2" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="approvalMessage" class="block text-sm font-medium text-gray-700 mb-1">Message to Member:</label>
+                            <textarea wire:model.defer="approvalMessage"
+                                    id="approvalMessage"
+                                    class="w-full p-2 border rounded"
+                                    rows="4"
+                                    placeholder="Reason or comments (optional)..."></textarea>
+                            <x-input-error for="approvalMessage" class="mt-2" />
+                        </div>
+
+                        <div class="flex justify-end">
+                            <x-button wire:click="submitApproval" class="mr-2">
+                                Submit
+                            </x-button>
+                            <x-secondary-button wire:click="$set('approvalModalOpen', false)">
+                                Cancel
+                            </x-secondary-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+
+
     @if($showRequestModal)
         <div class="fixed z-50 inset-0 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen px-4">
@@ -444,6 +536,57 @@
             </div>
         </div>
     @endif
+
+
+    @if($manageRequestModalOpen)
+    <div class="fixed z-50 inset-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Manage Change Request</h2>
+                <h3 class="text-sm font-bold text-center text-gray-900 mb-2">Change Requst by Member</h3>
+                <p class="text-sm font-medium text-center text-gray-900 mb-2">{{ $changeRequest }}</p>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-1">Decision</label>
+                    <select wire:change="handleApprovalSelection($event.target.value)" class="w-full border rounded p-2">
+                        <option value="">Select...</option>
+                        <option value="1">Approve</option>
+                        <option value="0">Reject</option>
+                    </select>
+
+
+                    <x-input-error for="requestApproved" class="mt-2" />
+                </div>
+
+                {{-- Show Reason for Rejection ONLY if "Reject" option is selected --}}
+                @if($showRejectionReasonField)
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-1">Reason for Rejection</label>
+                        <textarea wire:model.defer="requestRejectionReason"
+                                class="w-full border rounded p-2"
+                                rows="4"
+                                placeholder="State reason for rejection..."></textarea>
+                        <x-input-error for="requestRejectionReason" class="mt-2" />
+                    </div>
+                @endif
+
+
+                <div class="mt-4 flex justify-end">
+                    <x-button wire:click="submitRequestDecision" class="mr-2">
+                        Submit
+                    </x-button>
+                    <x-secondary-button wire:click="closeManageRequestModal">
+                        Cancel
+                    </x-secondary-button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
     
 </div>

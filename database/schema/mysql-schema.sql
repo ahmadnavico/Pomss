@@ -336,7 +336,6 @@ CREATE TABLE `users` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `profile_approved` tinyint(1) NOT NULL DEFAULT '0',
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `two_factor_secret` text COLLATE utf8mb4_unicode_ci,
   `two_factor_recovery_codes` text COLLATE utf8mb4_unicode_ci,
@@ -371,4 +370,3 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (11,'2025_05_06_130
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (12,'2025_05_06_130742_create_post_tags_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (13,'2025_05_06_131716_create_settings_table',1);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (14,'2025_05_07_190145_create_testimonials_table',1);
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (15,'2025_05_12_165025_add_profile_approved_to_users_table',1);
