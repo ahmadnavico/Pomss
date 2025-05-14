@@ -517,9 +517,21 @@ class MemberDetailsForm extends Component
             'fcps_degree_copy' => $this->fcps_degree_copy
                 ? $this->fcps_degree_copy->store($folder, 'member')
                 : $this->existing_fcps_degree_copy,
-            'profile_submitted' => true,
         ];
 
+       
+        // ✅ Check all fields are filled
+        $allFieldsFilled = collect($data)->every(function ($value) {
+            return !is_null($value) && $value !== '' && $value !== '[]' && $value !== '{}';
+        });
+
+        // ✅ Check testimonials not empty
+        $hasTestimonials = is_array($this->testimonials) && count($this->testimonials) > 0;
+
+        // ✅ Set profile_submitted only if both conditions are met
+        $data['profile_submitted'] = $allFieldsFilled && $hasTestimonials;
+
+        // Set profile_submitted accordingly
         $member = $user->member()->updateOrCreate(['user_id' => $user->id], $data);
 
         //testimonials
@@ -545,7 +557,7 @@ class MemberDetailsForm extends Component
             );
         }
         $this->dispatch('saved');
-        if(!auth()->user()->hasRole('Admin')){
+        if($data['profile_submitted'] && !auth()->user()->hasRole('Admin')){
             $admins = User::role('Admin')->get();
             foreach ($admins as $admin) {
                 $admin->notify(new ProfileSubmittedForApproval($member));
