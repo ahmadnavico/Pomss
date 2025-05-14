@@ -409,13 +409,18 @@
                     @else
                         <p>You are not allowed to make changes. Your profile approval is in process.</p>
                     @endif
-                    <x-action-message class="me-3" on="changerequest">
-                        {{ __('Request Done.') }}
-                    </x-action-message>
 
-                    <x-button wire:click="openRequestModal">
-                        {{ __('Request for Changes') }}
-                    </x-button>
+                    @if(!$haveRequests)
+                        <x-action-message class="me-3" on="changerequest">
+                            {{ __('Request Done.') }}
+                        </x-action-message>
+
+                        <x-button wire:click="openRequestModal">
+                            {{ __('Request for Changes') }}
+                        </x-button>
+                    @else
+                        <p>You Already have one Request For Approval From Admin. So You Cant Request More. Contact to admin.</p>
+                    @endif
                 </x-slot>
             @endif
         @endif
@@ -441,7 +446,7 @@
                 </x-action-message>
 
                 <x-button wire:click="openApprovalModal">
-                    {{ __('Review Approval') }}
+                    {{ __('Review Profile Approval') }}
                 </x-button>
                 @if($haveRequests)
                     <x-action-message class="me-3" on="managerequest">
@@ -449,7 +454,7 @@
                     </x-action-message>
 
                     <x-button wire:click="openManageRequestModal">
-                        {{ __('Manage Request') }}
+                        {{ __('Manage change Request') }}
                     </x-button>
                 @endif
             </x-slot>
@@ -547,9 +552,10 @@
 
             <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full p-6">
                 <h2 class="text-lg font-medium text-gray-900 mb-4">Manage Change Request</h2>
-                <h3 class="text-sm font-bold text-center text-gray-900 mb-2">Change Requst by Member</h3>
-                <p class="text-sm font-medium text-center text-gray-900 mb-2">{{ $changeRequest }}</p>
-
+                @if($changeRequest)
+                    <h3 class="text-sm font-bold text-center text-gray-900 mb-2">Change Requst by Member</h3>
+                    <p class="text-sm font-medium text-center text-gray-900 mb-2">{{ $changeRequest->message }}</p>
+                @endif
                 <div class="mb-4">
                     <label class="block text-gray-700 mb-1">Decision</label>
                     <select wire:change="handleApprovalSelection($event.target.value)" class="w-full border rounded p-2">

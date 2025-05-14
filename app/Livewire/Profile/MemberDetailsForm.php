@@ -59,7 +59,8 @@ class MemberDetailsForm extends Component
     public $requestApproved = null;
     public $requestRejectionReason = '';
     public $showRejectionReasonField = false;
-    public $changeRequest; // Add this
+    public $changeRequest;
+
 
     
     protected function rules()
@@ -363,18 +364,20 @@ class MemberDetailsForm extends Component
         $member = Member::findOrFail($this->member_Id);
         // dd($member);
         // Update request status (if you track it in DB — optional)
-        $changeRequest = $member->changeRequest;
+        $changeRequest = $member->changeRequest()->withoutTrashed()->latest()->first();
         if ($changeRequest) {
             $changeRequest->update([
                 'request_approved' => $this->requestApproved,
             ]);
+            $changeRequest->delete();
         }
 
         // Notify the member
         $member->user->notify(new MemberChangeRequestResponse(
             $member,
             (bool) $this->requestApproved,
-            $this->requestRejectionReason
+            $this->requestRejectionReason,
+            
         ));
 
         $this->dispatch('notify', title: 'Success', message: 'Request decision submitted.', type: 'success');
@@ -398,8 +401,9 @@ class MemberDetailsForm extends Component
         // (bool)$this->profile_approved = $member->user->profile_approved ?? false;
         $this->profileApproved = optional($member->profileApproval)->is_approved ?? false;
         $this->requestApproval = optional($member->changeRequest)->request_approved ?? true;
-        $this->haveRequests = $member->changeRequest()->exists();
-        $this->changeRequest = $member->changeRequest->message ?? null;
+        $this->haveRequests = $member->changeRequest()->withoutTrashed()->exists();
+        
+        $this->changeRequest = $member->changeRequest()->withoutTrashed()->latest()->first();
 
         $this->profile_submitted = optional($member)->profile_submitted ?? false;
         

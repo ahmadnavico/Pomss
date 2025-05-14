@@ -34,7 +34,7 @@ class MemberProfileApprovalNotification extends Notification
             'reason' => $this->message,
             'member_id' => $this->member->id,
             'user_id' => $this->member->user->id,
-            'url' => route('member-management.edit', ['user' => $this->member->user->id]),
+            'url' => route('profile.show'),
         ];
     }
 }

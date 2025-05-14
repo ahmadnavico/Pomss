@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('message');
             $table->boolean('request_approved')->default(false);
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 
