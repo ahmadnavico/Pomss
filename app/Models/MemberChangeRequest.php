@@ -16,6 +16,7 @@ class MemberChangeRequest extends Model
         'member_id',
         'message',
         'request_approved',
+        'status_by_admin',
     ];
 
     public function member()

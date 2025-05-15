@@ -57,6 +57,7 @@ class MemberDetailsForm extends Component
     //maanage requests 
     public $manageRequestModalOpen = false;
     public $requestApproved = null;
+    public $fulfilledByMember = false;
     public $requestRejectionReason = '';
     public $showRejectionReasonField = false;
     public $changeRequest;
@@ -285,6 +286,7 @@ class MemberDetailsForm extends Component
         $changeRequest = MemberChangeRequest::create([
             'member_id' => $this->member_Id,
             'message' => $this->changeReason,
+            'status_by_admin' => null,
         ]);
         $admins = User::role('Admin')->get();
          // using Spatie roles
@@ -338,7 +340,6 @@ class MemberDetailsForm extends Component
     //request management
     public function handleApprovalSelection($value)
     {
-        // dd($value);
         $this->requestApproved = $value;
         $this->showRejectionReasonField = $value === '0';
     }
@@ -366,11 +367,15 @@ class MemberDetailsForm extends Component
         // Update request status (if you track it in DB — optional)
         $changeRequest = $member->changeRequest()->withoutTrashed()->latest()->first();
         if ($changeRequest) {
+            $status = $this->requestApproved == '1' ? 'approved' : 'rejected';
+        
             $changeRequest->update([
                 'request_approved' => $this->requestApproved,
+                'status_by_admin' => $status,
+       
             ]);
-            $changeRequest->delete();
         }
+        
 
         // Notify the member
         $member->user->notify(new MemberChangeRequestResponse(
@@ -400,10 +405,12 @@ class MemberDetailsForm extends Component
 
         // (bool)$this->profile_approved = $member->user->profile_approved ?? false;
         $this->profileApproved = optional($member->profileApproval)->is_approved ?? false;
-        $this->requestApproval = optional($member->changeRequest)->request_approved ?? true;
+
         $this->haveRequests = $member->changeRequest()->withoutTrashed()->exists();
         
         $this->changeRequest = $member->changeRequest()->withoutTrashed()->latest()->first();
+        $this->requestApproval = optional($this->changeRequest)->request_approved ?? true;
+        $this->fulfilledByMember = optional($this->changeRequest)->fulfilled_by_member ?? true;
 
         $this->profile_submitted = optional($member)->profile_submitted ?? false;
         
@@ -448,9 +455,7 @@ class MemberDetailsForm extends Component
 
     public function save()
     {
-        if (!auth()->user()->hasRole('Admin') && $this->profileApproved || $this->haveRequests) {
-            return;
-        }
+        
         $this->validate();
         if (!auth()->user()->hasRole('Admin')) {
             $user = auth()->user();
@@ -462,7 +467,6 @@ class MemberDetailsForm extends Component
         }
 
         $memberId = $member->id;
-
         $formattedLinks = collect($this->socialLinks)
         ->pluck('url', 'platform') // platform => url
         ->toJson();
@@ -556,6 +560,13 @@ class MemberDetailsForm extends Component
                 ]
             );
         }
+        if ($this->changeRequest && $this->requestApproval) {
+            $this->changeRequest->fulfilled_by_member = true;
+            $this->changeRequest->save();
+        
+            $this->changeRequest->delete();
+        }
+        
         $this->dispatch('saved');
         if($data['profile_submitted'] && !auth()->user()->hasRole('Admin')){
             $admins = User::role('Admin')->get();

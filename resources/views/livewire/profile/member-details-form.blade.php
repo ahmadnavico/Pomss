@@ -386,7 +386,16 @@
 
         </x-slot>
         @if (!auth()->user()->hasRole('Admin'))
+                <x-slot name="actions">
+                    <x-action-message class="me-3" on="saved">
+                        {{ __('Saved.') }}
+                    </x-action-message>
 
+                    <x-button wire:loading.attr="disabled" wire:target="save">
+                        {{ __('Save') }}
+                    </x-button>
+                </x-slot>
+            
             @if (!$profile_submitted)
                 <x-slot name="actions">
                     <x-action-message class="me-3" on="saved">
@@ -398,10 +407,31 @@
                     </x-button>
                 </x-slot>
 
-            @elseif (!$requestApproval)
+            @elseif (!$requestApproval && empty($changeRequest->status_by_admin))
                 <x-slot name="actions">
                     <p>Your previous request for changes is still under review. You can't submit another request at this time.</p>
                 </x-slot>
+            @elseif(!$requestApproval && $changeRequest->status_by_admin === 'rejected')
+                <x-slot name="actions">
+                    <p>Your Previous Request is Rejected by Admin. You Can Request again for furthur changes.
+                    <x-action-message class="me-3" on="changerequest">
+                        {{ __('Request Done.') }}
+                    </x-action-message>
+
+                    <x-button wire:click="openRequestModal">
+                        {{ __('Request for Changes') }}
+                    </x-button>
+                </x-slot>
+            @elseif($requestApproval && !$fulfilledByMember)
+                <x-slot name="actions">
+                        <x-action-message class="me-3" on="saved">
+                            {{ __('Saved.') }}
+                        </x-action-message>
+
+                        <x-button wire:loading.attr="disabled" wire:target="save">
+                            {{ __('Save') }}
+                        </x-button>
+                    </x-slot>
             @else
                 <x-slot name="actions">
                     @if($profileApproved)
@@ -448,7 +478,7 @@
                 <x-button wire:click="openApprovalModal">
                     {{ __('Review Profile Approval') }}
                 </x-button>
-                @if($haveRequests)
+                @if($haveRequests && empty($changeRequest->status_by_admin))
                     <x-action-message class="me-3" on="managerequest">
                         {{ __('Request Managed.') }}
                     </x-action-message>
