@@ -99,7 +99,7 @@
                             wire:model.defer="qualifications.{{ $index }}"
                             placeholder="Enter Qualification" />
                         <button type="button"
-                                wire:click="removeQualification"{{ $index }})"
+                                wire:click="removeQualification{{ $index }})"
                                 class="text-red-600">
                             Remove
                         </button>

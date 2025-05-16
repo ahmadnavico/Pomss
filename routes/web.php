@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Role\RoleAndPermissionController;
 use App\Http\Controllers\Admin\User\UserManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MemberChangeRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -20,6 +21,10 @@ Route::middleware([
     Route::prefix('admin')->group(function () {
         Route::prefix('role-and-permissions')->middleware('can:role management')->group(function () {
             Route::get('/', [RoleAndPermissionController::class, 'show'])->name('role-and-permissions.show');
+        });
+        Route::prefix('members-change-requests')->middleware('can:members change request handling')->group(function () {
+            Route::get('/', [MemberChangeRequestController::class, 'index'])->name('members-change-requests.show');
+            Route::get('/edit/{id}', [MemberChangeRequestController::class, 'edit'])->name('member-change-request.edit');
         });
         Route::prefix('post')->group(function () {
             Route::get('create/{post?}', CreatePostController::class)->name('post.create');
