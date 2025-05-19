@@ -27,7 +27,13 @@ class Post extends Model
         'reviewed_at',
         'plagiarism_detected',
         'is_feature',
-        'thumbnail_image_path'
+        'thumbnail_image_path',
+        'event_type',
+        'event_for',
+        'event_cost',
+        'meeting_link',
+        'venue',
+        'entry_code',
     ];
 
     // Cast attributes to specific types

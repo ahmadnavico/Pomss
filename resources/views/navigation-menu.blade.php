@@ -165,13 +165,19 @@
                                 @endcan 
                                 @can('post management')    
                                     <x-dropdown-link href="{{ route('posts-management.all') }}">
-                                        {{ __('posts') }}
+                                        {{ __('Create Event') }}
                                     </x-dropdown-link>
                                 @endcan   
                                 
                             @endcan
                             <x-dropdown-link href="{{ route('post.create') }}">
-                                {{ __('Create Post') }}
+                                {{ __('Create Event') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('post.create') }}">
+                                {{ __('My Events') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('post.create') }}">
+                                {{ __('View Events') }}
                             </x-dropdown-link>
                             <x-dropdown-link href="{{ route('profile.show') }}">
                                 {{ __('Profile') }}

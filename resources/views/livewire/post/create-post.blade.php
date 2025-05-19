@@ -231,7 +231,71 @@
                                 <span class="error">{{ $message }}</span>
                             @enderror
                         </div>
-                        
+
+                        <!-- event -->
+                         <div>
+                            <label class="block text-sm text-left font-medium text-gray-700">Event Type</label>
+                            <select wire:model="event_type" wire:change="eventTypeUpdated" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                <option value="">Select Event Type</option>
+                                <option value="virtual">Virtual</option>
+                                <option value="physical">Physical</option>
+                            </select>
+                            @error('event_type')
+                                <span class="error">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                            {{-- Event For --}}
+                            @if($event_type)
+                                <div>
+                                    <label class="block text-sm text-left font-medium text-gray-700">Event For</label>
+                                    <select wire:model="event_for"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" wire:change="eventForUpdated">
+                                        <option value="">Select Event For</option>
+                                        <option value="public">Public</option>
+                                        <option value="members">Members</option>
+                                    </select>
+                                </div>
+                                
+                            @endif
+
+                            {{-- Event Cost --}}
+                            @if($event_for)
+                                <div>
+                                    <label class="block text-sm text-left font-medium text-gray-700">Event Cost</label>
+                                    <select wire:model="event_cost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"  wire:change="eventCostUpdated">
+                                        <option value="">Select Cost Type</option>
+                                        <option value="free">Free</option>
+                                        <option value="paid">Paid</option>
+                                    </select>
+
+        
+                                </div>
+                            @endif
+
+                            {{-- Meeting Link (only for virtual) --}}
+                            @if($event_type === 'virtual')
+                                <div>
+                                    <label class="block text-sm text-left font-medium text-gray-700">Meeting Link</label>
+                                    <input type="text" wire:model="meeting_link" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="https://zoom.us/...">
+
+                                </div>
+                            @endif
+
+                            {{-- Venue and Entry Code (only for physical) --}}
+                            @if($event_type === 'physical')
+                                <div>
+                                    <label class="block text-sm  text-left font-medium text-gray-700">Venue</label>
+                                    <input type="text" wire:model="venue" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Venue address">
+        
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm  text-left  font-medium text-gray-700">Entry Code</label>
+                                    <input type="text" wire:model="entry_code" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="ABC123">
+        
+                                </div>
+                            @endif
+                        <!-- event -->
                         {{-- confirmation model --}}
                         <div>
                             <x-confirmation-modal id="publish-post-modal" maxWidth="lg"
@@ -337,26 +401,6 @@
                                 @endif
                             @endif
                         </div>
-
-                        {{-- <div class="mt-2">
-                <div class="text-right">
-                    @if ($post)
-                        @if ($showPublishPostButton)
-                            <button class="mt-4 mb-4 button-bg-gold w-1/4 py-3 px-6 text-sm uppercase font-medium rounded-lg text-white ml-auto" wire:click="showPublishModal">
-                                Publish Post
-                            </button>
-
-                        @if ($post->status->value == 'in_review')
-                            <p>Your post is under Review.</p>
-                        @elseif($post->publish_attempts > 3)
-                            <p>Your Publish attempts limit reached for 24 hours.</p>
-                        @endif
-                    @endif
-                </div>
-
-                <button type="submit"  onclick="setQuillValue()" class="button-bg-gold w-full py-3 px-6 text-xl uppercase font-medium rounded-lg text-white">{{ $post && $post->status->value === 'draft' ? 'Save as Draft' : 'Save Post' }}</button>
-            </div> --}}
-
                     </form>
                     <!-- End Form -->
         <script>

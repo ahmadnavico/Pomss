@@ -50,6 +50,14 @@ class CreatePost extends Component
     public $fileName; 
     public $latestScan = [];
     public $savePublish = false;
+
+    public $event_type;
+    public $event_for;
+    public $event_cost;
+    public $meeting_link;
+    public $venue;
+    public $entry_code;
+
     protected $listeners = ['clearError', 'showPublishModal'];
     protected $rules = [
         'title' => 'required|string|max:200',
@@ -124,7 +132,21 @@ class CreatePost extends Component
             'meta_description' => 'required|string|max:' . (getSettingValue('post-description-limit') ?? 150),
             'selectedCategories' => 'required|array|min:1',
             'selectedTags' => 'required|array|min:1',
+             // 👇 Event fields
+            'event_type' => 'required|in:virtual,physical',
+            'event_for' => 'required|in:public,members',
+            'event_cost' => 'required|in:free,paid',
+
         ];
+        // Conditional fields
+        if ($this->event_type === 'virtual') {
+            $rules['meeting_link'] = 'required|string|max:255';
+        }
+
+        if ($this->event_type === 'physical') {
+            $rules['venue'] = 'required|string|max:255';
+            $rules['entry_code'] = 'nullable|string|max:100';
+        }
         if (!$this->postId && $this->featured_image == null) {
             $this->fileName = null;
             $rules['featured_image'] = 'required|image|max:5120|mimes:jpeg,png,jpg,gif,svg';
@@ -138,8 +160,49 @@ class CreatePost extends Component
         $this->validate($rules, [
             'selectedCategories.required' => 'Please select at least one category.',
             'selectedTags.required' => 'Please provide at least one tag.',
+            'meeting_link.required' => 'Meeting link is required for virtual events.',
+            'venue.required' => 'Venue is required for physical events.',
         ]);
     }
+
+    public function eventTypeUpdated()
+    {
+        logger('Event Type Updated: ' . $this->event_type);
+
+        $this->reset([
+            'event_for',
+            'event_cost',
+            'meeting_link',
+            'venue',
+            'entry_code',
+        ]);
+    }
+
+    public function eventForUpdated()
+    {
+        logger('Event For Updated: ' . $this->event_for);
+
+        $this->reset([
+            'event_cost',
+            'meeting_link',
+            'venue',
+            'entry_code',
+        ]);
+    }
+
+    public function eventCostUpdated()
+    {
+        logger('Event Cost Updated: ' . $this->event_cost);
+
+        if ($this->event_type === 'virtual') {
+            $this->reset(['meeting_link']);
+        }
+
+        if ($this->event_type === 'physical') {
+            $this->reset(['venue', 'entry_code']);
+        }
+    }
+
     public function saveDraft()
     {
         if($this->post && $this->post->status->value === 'in_review'){
@@ -180,6 +243,14 @@ class CreatePost extends Component
                 // 'status' => $this->postStatus,
                 'excerpt' => $excerpt,
                 // 'user_id' => auth()->id(),
+
+                // 👇 Event fields
+                'event_type' => $this->event_type,
+                'event_for' => $this->event_for,
+                'event_cost' => $this->event_cost,
+                'meeting_link' => $this->meeting_link,
+                'venue' => $this->venue,
+                'entry_code' => $this->entry_code,
             ]);
             $this->createPostLog('Post is updated.');
         } else {
@@ -192,6 +263,14 @@ class CreatePost extends Component
                 'status' => $this->postStatus,
                 'excerpt' => $excerpt,
                 'user_id' => auth()->id(),
+
+                // 👇 Event fields
+                'event_type' => $this->event_type,
+                'event_for' => $this->event_for,
+                'event_cost' => $this->event_cost,
+                'meeting_link' => $this->meeting_link,
+                'venue' => $this->venue,
+                'entry_code' => $this->entry_code,
             ]);
             $this->postId = $post->id;
             $this->createPostLog('Post submitted as draft');
