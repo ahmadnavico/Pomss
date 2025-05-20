@@ -111,6 +111,13 @@ class CreatePost extends Component
             $this->content = $post->content();
             $this->selectedCategories = $post->categories->pluck('id')->toArray();
             $this->selectedTags = $post->tags->pluck('name')->toArray();
+             // Set the additional event fields
+            $this->event_type = $post->event_type;
+            $this->event_for = $post->event_for;
+            $this->event_cost = $post->event_cost;
+            $this->meeting_link = $post->meeting_link;
+            $this->venue = $post->venue;
+            $this->entry_code = $post->entry_code;
         }
         $this->categories = Category::all();
         $this->tags = Tag::all();

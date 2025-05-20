@@ -173,10 +173,10 @@
                             <x-dropdown-link href="{{ route('post.create') }}">
                                 {{ __('Create Event') }}
                             </x-dropdown-link>
-                            <x-dropdown-link href="{{ route('post.create') }}">
+                            <x-dropdown-link href="{{ route('my.events') }}">
                                 {{ __('My Events') }}
                             </x-dropdown-link>
-                            <x-dropdown-link href="{{ route('post.create') }}">
+                            <x-dropdown-link href="{{ route('view.events') }}">
                                 {{ __('View Events') }}
                             </x-dropdown-link>
                             <x-dropdown-link href="{{ route('profile.show') }}">

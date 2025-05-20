@@ -244,7 +244,6 @@
                                 <span class="error">{{ $message }}</span>
                             @enderror
                         </div>
-
                             {{-- Event For --}}
                             @if($event_type)
                                 <div>

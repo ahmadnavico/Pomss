@@ -11,7 +11,12 @@ use App\Http\Controllers\MemberChangeRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
-
+Route::prefix('my-events')->group(function () {
+    Route::get('/', [EventController::class, 'index'])->name('my.events');
+});
+Route::prefix('events')->group(function () {
+    Route::get('/', [EventController::class, 'showAll'])->name('view.events');
+});
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -21,9 +26,7 @@ Route::middleware([
     Route::prefix('post')->group(function () {
         Route::get('create/{post?}', CreatePostController::class)->name('post.create');
     });
-    Route::prefix('my-events')->group(function () {
-        Route::get('/', [EventController::class, 'index'])->name('post.create');
-    });
+    
     Route::prefix('admin')->group(function () {
         Route::prefix('role-and-permissions')->middleware('can:role management')->group(function () {
             Route::get('/', [RoleAndPermissionController::class, 'show'])->name('role-and-permissions.show');

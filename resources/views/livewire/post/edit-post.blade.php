@@ -11,7 +11,7 @@
         <h2 class="text-4xl font-medium text-gray-800">
           Create / Edit Post
         </h2>
-        @if($post->status->value === 'published')
+        @if($post->status === 'published')
             <a href="#" target="_blank" 
             class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-gray-700 dark:text-gray-400 border border-gray-500 ">
                 View post
@@ -314,7 +314,7 @@
             Logs
         </h2>
 
-        <livewire:post.post-logs-table :logs="collect($formData['logs'])" />
+        <!-- <livewire:post.post-logs-table :logs="collect($formData['logs'])" /> -->
 
       </div>
     </div>
