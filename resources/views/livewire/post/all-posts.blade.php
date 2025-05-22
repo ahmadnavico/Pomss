@@ -1,9 +1,9 @@
 <!-- Display Posts Section -->
 <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h1 class="text-3xl font-bold mb-6 text-center">Blog Posts</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center">Event's</h1>
 
     @if ($posts->isEmpty())
-        <p class="text-gray-500 text-center">No Blog Posts found.</p>
+        <p class="text-gray-500 text-center">No Event's found.</p>
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($posts as $post)

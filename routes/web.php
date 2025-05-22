@@ -16,6 +16,7 @@ Route::prefix('my-events')->group(function () {
 });
 Route::prefix('events')->group(function () {
     Route::get('/', [EventController::class, 'showAll'])->name('view.events');
+    Route::get('/payment/{post?}', [EventController::class, 'eventPayment'])->name('event.payment');
 });
 Route::middleware([
     'auth:sanctum',

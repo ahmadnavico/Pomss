@@ -76,8 +76,8 @@ final class ViewEventsTable extends PowerGridComponent
                         if (strtolower($post->event_cost) === 'free') {
                             $details .= "<div><strong>Meeting Link:</strong> <a href='{$post->meeting_link}' class='text-blue-600 underline' target='_blank'>{$post->meeting_link}</a></div>";
                         } elseif (strtolower($post->event_cost) === 'paid') {
-                            $details .= "<div class='text-red-600 font-semibold'>Payment Required to Access Meeting Link. Link will be emailed upon successful payment.</div>";
-                            $details .= "<div><a href='" . route('events.payment', ['post' => $post->id]) . "' class='mt-1 inline-block bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs'>Pay Now</a></div>";
+                            $details .= "<div class='text-red-600 font-semibold'>Payment Required to Access Meeting Link. </br> Link will be emailed upon successful payment.</div>";
+                            $details .= "<div><a href='" . route('event.payment',['post' => $post->id]) . "' class='mt-1 inline-block bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs'>Pay Now</a></div>";
                         }
                     }
                 }

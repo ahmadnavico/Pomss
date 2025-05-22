@@ -14,6 +14,7 @@ class MembersSearch extends Component
     public function render()
     {
         $members = Member::with('user')
+            ->where('profile_submitted', true)
             ->when($this->name, function ($query) {
                 $query->whereHas('user', function ($q) {
                     $q->where('full_name', 'like', '%' . $this->name . '%');
