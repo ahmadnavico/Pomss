@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'settings management']);
         Permission::create(['name' => 'edit setting']);
         Permission::create(['name' => 'delete setting']);
+        Permission::create(['name' => 'manage requests']);
         
         
         //Assign Permissions to Roles

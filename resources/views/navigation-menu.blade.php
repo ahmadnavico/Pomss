@@ -171,6 +171,11 @@
                                     <x-dropdown-link href="{{ route('posts-management.all') }}">
                                         {{ __('Create Event') }}
                                     </x-dropdown-link>
+                                @endcan
+                                @can('manage requests')    
+                                    <x-dropdown-link href="{{ route('members-change-requests.show') }}">
+                                        {{ __('Members Change Requests') }}
+                                    </x-dropdown-link>
                                 @endcan   
                                 
                             @endcan

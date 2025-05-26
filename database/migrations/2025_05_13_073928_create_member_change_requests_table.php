@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('member_id')->constrained('members')->onDelete('cascade');
             $table->text('message');
             $table->boolean('request_approved')->default(false);
-            $table->string('status_by_admin')->nullable()->default( null);
+            $table->string('status_by_admin')->nullable()->default( 'pending');
             $table->timestamps();
             $table->softDeletes(); 
         });
