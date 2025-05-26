@@ -54,6 +54,8 @@ class MemberDetailsForm extends Component
     public $approvalMessage;
     public $profileApproved = false;
 
+    public $wasSubmitted = false;
+
     //maanage requests 
     public $manageRequestModalOpen = false;
     public $requestApproved = null;
@@ -411,6 +413,8 @@ class MemberDetailsForm extends Component
         $this->changeRequest = $member->changeRequest()->withoutTrashed()->latest()->first();
         $this->requestApproval = optional($this->changeRequest)->request_approved ?? true;
         $this->fulfilledByMember = optional($this->changeRequest)->fulfilled_by_member ?? true;
+        $this->wasSubmitted = $member->profile_submitted ?? false;
+        dd($this->wasSubmitted);
 
         $this->profile_submitted = optional($member)->profile_submitted ?? false;
         
